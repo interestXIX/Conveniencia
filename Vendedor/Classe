@@ -1,0 +1,38 @@
+package conveniencia;
+
+import java.util.Scanner;
+import java.util.List;
+
+public class Vendedor extends Usuario {
+    private ProdutoDAO produtoDAO = new ProdutoDAO();
+
+    public Vendedor(int id, String nome, String usuario, String senha) {
+        super(id, nome, usuario, senha);
+    }
+
+    @Override
+    public void mostrarMenu() {
+        System.out.println("\n=== MENU VENDEDOR ===");
+        System.out.println("1. Realizar venda");
+        System.out.println("2. Consultar produtos");
+        System.out.println("3. Sair");
+    }
+
+    @Override
+    public boolean temPermissaoAdmin() {
+        return false;
+    }
+
+    public void realizarVenda(Scanner scanner) {
+        List<Produto> produtos = produtoDAO.listarProdutos();
+        produtos.forEach(p -> System.out.println(p.getId() + ". " + p.getNome() + " - R$" + p.getPreco()));
+        
+        System.out.print("Selecione o ID do produto: ");
+        int idProduto = scanner.nextInt();
+        System.out.print("Quantidade: ");
+        int quantidade = scanner.nextInt();
+
+        produtoDAO.atualizarEstoque(idProduto, quantidade);
+        System.out.println("Venda registrada!");
+    }
+}
