@@ -1,0 +1,43 @@
+package conveniencia;
+
+import java.util.Scanner;
+import java.util.List;
+
+public class Administrador extends Usuario {
+    private ProdutoDAO produtoDAO = new ProdutoDAO();
+
+    public Administrador(int id, String nome, String usuario, String senha) {
+        super(id, nome, usuario, senha);
+    }
+
+    @Override
+    public void mostrarMenu() {
+        System.out.println("\n=== MENU ADMINISTRADOR ===");
+        System.out.println("1. Cadastrar produto");
+        System.out.println("2. Listar produtos");
+        System.out.println("3. Sair");
+    }
+
+    @Override
+    public boolean temPermissaoAdmin() {
+        return true;
+    }
+
+    public void cadastrarProduto(Scanner scanner) {
+        scanner.nextLine();
+        System.out.print("Nome do produto: ");
+        String nome = scanner.nextLine();
+        System.out.print("Preço: ");
+        double preco = scanner.nextDouble();
+        System.out.print("Estoque inicial: ");
+        int estoque = scanner.nextInt();
+
+        produtoDAO.cadastrarProduto(new Produto(0, nome, preco, estoque));
+        System.out.println("Produto cadastrado!");
+    }
+
+    public void listarProdutos() {
+        List<Produto> produtos = produtoDAO.listarProdutos();
+        produtos.forEach(p -> System.out.println(p.getNome() + " - R$" + p.getPreco()));
+    }
+}
