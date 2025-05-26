@@ -1,0 +1,93 @@
+package conveniencia;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Scanner;
+
+public class Conveniencia {
+    public static void main(String[] args) {
+    	
+    	 try {
+    	        Connection conn = ConexaoBD.getConexao();
+    	        System.out.println("Conexão bem-sucedida!");
+    	        conn.close();
+    	    } catch (SQLException e) {
+    	        System.err.println("Erro na conexão: " + e.getMessage());
+    	    }
+    	
+        SistemaLogin sistema = new SistemaLogin();
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("=== SISTEMA DE CONVENIÊNCIA ===");
+        
+        // Login
+        System.out.print("Usuário: ");
+        String usuario = scanner.nextLine();
+        System.out.print("Senha: ");
+        String senha = scanner.nextLine();
+
+        Usuario usuarioLogado = sistema.fazerLogin(usuario, senha);
+
+        if (usuarioLogado != null) {
+            System.out.println("\nBem-vindo, " + usuarioLogado.getNome() + "!");
+            
+            if (usuarioLogado.temPermissaoAdmin()) {
+                executarMenuAdmin((Administrador) usuarioLogado, scanner);
+            } else {
+                executarMenuVendedor((Vendedor) usuarioLogado, scanner);
+            }
+        } else {
+            System.out.println("Credenciais inválidas!");
+        }
+    }
+
+    private static void executarMenuAdmin(Administrador admin, Scanner scanner) {
+        int opcao;
+        do {
+            admin.mostrarMenu();
+            System.out.print("Escolha uma opção: ");
+            opcao = scanner.nextInt();
+            scanner.nextLine(); // Limpar buffer
+
+            switch (opcao) {
+                case 1:
+                    admin.cadastrarProduto(scanner);
+                    break;
+                case 2:
+                    admin.listarProdutos();
+                    break;
+                case 3:
+                    System.out.println("Saindo do sistema...");
+                    break;
+                default:
+                    System.out.println("Opção inválida!");
+            }
+        } while (opcao != 3);
+    }
+
+    private static void executarMenuVendedor(Vendedor vendedor, Scanner scanner) {
+        int opcao;
+        do {
+            vendedor.mostrarMenu();
+            System.out.print("Escolha uma opção: ");
+            opcao = scanner.nextInt();
+            scanner.nextLine(); // Limpar buffer
+
+            switch (opcao) {
+                case 1:
+                    vendedor.realizarVenda(scanner);
+                    break;
+                case 2:
+                    System.out.println("=== PRODUTOS DISPONÍVEIS ===");
+                    new ProdutoDAO().listarProdutos().forEach(p -> 
+                        System.out.println(p.getNome() + " - R$" + p.getPreco())
+                    );
+                    break;
+                case 3:
+                    System.out.println("Saindo do sistema...");
+                    break;
+                default:
+                    System.out.println("Opção inválida!");
+            }
+        } while (opcao != 3);
+    }
+}
