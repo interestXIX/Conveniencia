@@ -1,1 +1,55 @@
+package conveniencia;
 
+import java.sql.*;
+
+public class UsuarioDAO {
+    public Usuario buscarPorCredenciais(String usuario, String senhaDigitada) {
+        String sql = "SELECT * FROM usuarios WHERE usuario = ?";
+        try (Connection conn = ConexaoBD.getConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, usuario);
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                String senhaHash = rs.getString("senha");
+                String tipo = rs.getString("tipo");
+                
+                if (HashUtil.hashSenha(senhaDigitada).equals(senhaHash)) {
+                    return criarUsuario(rs);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar usuário: " + e.getMessage());
+        }
+        return null;
+    }
+
+    private Usuario criarUsuario(ResultSet rs) throws SQLException {
+        int id = rs.getInt("id");
+        String nome = rs.getString("nome");
+        String usuario = rs.getString("usuario");
+        String tipo = rs.getString("tipo");
+        
+        return tipo.equalsIgnoreCase("ADMIN") 
+            ? new Administrador(id, nome, usuario, rs.getString("senha"))
+            : new Vendedor(id, nome, usuario, rs.getString("senha"));
+    }
+
+    public void cadastrarUsuario(Usuario usuario, String tipo) {
+        String sql = "INSERT INTO usuarios (nome, usuario, senha, tipo) VALUES (?, ?, ?, ?)";
+        try (Connection conn = ConexaoBD.getConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            String senhaHash = HashUtil.hashSenha(usuario.getSenha());
+            stmt.setString(1, usuario.getNome());
+            stmt.setString(2, usuario.getUsuario());
+            stmt.setString(3, senhaHash);
+            stmt.setString(4, tipo);
+            
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Erro ao cadastrar usuário: " + e.getMessage());
+        }
+    }
+}
