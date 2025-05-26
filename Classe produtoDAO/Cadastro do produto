@@ -1,0 +1,57 @@
+package conveniencia;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ProdutoDAO {
+    public void cadastrarProduto(Produto produto) {
+        String sql = "INSERT INTO produtos (nome, preco, estoque) VALUES (?, ?, ?)";
+        try (Connection conn = ConexaoBD.getConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, produto.getNome());
+            stmt.setDouble(2, produto.getPreco());
+            stmt.setInt(3, produto.getEstoque());
+            stmt.executeUpdate();
+            
+        } catch (SQLException e) {
+            System.err.println("Erro ao cadastrar produto: " + e.getMessage());
+        }
+    }
+
+    public List<Produto> listarProdutos() {
+        List<Produto> produtos = new ArrayList<>();
+        String sql = "SELECT * FROM produtos";
+        try (Connection conn = ConexaoBD.getConexao();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            
+            while (rs.next()) {
+                produtos.add(new Produto(
+                    rs.getInt("id"),
+                    rs.getString("nome"),
+                    rs.getDouble("preco"),
+                    rs.getInt("estoque")
+                ));
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao listar produtos: " + e.getMessage());
+        }
+        return produtos;
+    }
+
+    public void atualizarEstoque(int idProduto, int quantidade) {
+        String sql = "UPDATE produtos SET estoque = estoque - ? WHERE id = ?";
+        try (Connection conn = ConexaoBD.getConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, quantidade);
+            stmt.setInt(2, idProduto);
+            stmt.executeUpdate();
+            
+        } catch (SQLException e) {
+            System.err.println("Erro ao atualizar estoque: " + e.getMessage());
+        }
+    }
+}
