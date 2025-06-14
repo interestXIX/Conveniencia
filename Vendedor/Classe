@@ -1,38 +1,99 @@
-package conveniencia;
+package conveniencia2;
 
 import java.util.Scanner;
 import java.util.List;
 
 public class Vendedor extends Usuario {
-    private ProdutoDAO produtoDAO = new ProdutoDAO();
-
+    private ProdutoRepository produtoRepository;
+    
     public Vendedor(int id, String nome, String usuario, String senha) {
         super(id, nome, usuario, senha);
     }
-
+    
+    public void setProdutoRepository(ProdutoRepository produtoRepository) {
+        this.produtoRepository = produtoRepository;
+    }
+    
     @Override
     public void mostrarMenu() {
         System.out.println("\n=== MENU VENDEDOR ===");
         System.out.println("1. Realizar venda");
         System.out.println("2. Consultar produtos");
         System.out.println("3. Sair");
+        System.out.print("Escolha uma opção: ");
     }
-
+    
     @Override
     public boolean temPermissaoAdmin() {
         return false;
     }
-
+    
     public void realizarVenda(Scanner scanner) {
-        List<Produto> produtos = produtoDAO.listarProdutos();
-        produtos.forEach(p -> System.out.println(p.getId() + ". " + p.getNome() + " - R$" + p.getPreco()));
+        List<Produto> produtos = produtoRepository.listarProdutos();
         
-        System.out.print("Selecione o ID do produto: ");
-        int idProduto = scanner.nextInt();
-        System.out.print("Quantidade: ");
-        int quantidade = scanner.nextInt();
+        if (produtos.isEmpty()) {
+            System.out.println("Nenhum produto cadastrado!");
+            return;
+        }
+        
+        System.out.println("\n=== PRODUTOS DISPONÍVEIS ===");
+        for (Produto p : produtos) {
+            if (p.getEstoque() > 0) {
+                System.out.printf("%d. %s - R$ %.2f (Estoque: %d)%n", 
+                    p.getId(), p.getNome(), p.getPreco(), p.getEstoque());
+            }
+        }
 
-        produtoDAO.atualizarEstoque(idProduto, quantidade);
-        System.out.println("Venda registrada!");
+        System.out.print("\nSelecione o ID do produto: ");
+        int idProduto = scanner.nextInt();
+        
+        Produto produto = produtoRepository.buscarPorId(idProduto);
+        if (produto == null) {
+            System.out.println("Produto não encontrado!");
+            return;
+        }
+        
+        if (produto.getEstoque() == 0) {
+            System.out.println("Produto sem estoque!");
+            return;
+        }
+        
+        System.out.printf("Produto selecionado: %s - R$ %.2f%n", produto.getNome(), produto.getPreco());
+        System.out.printf("Estoque disponível: %d%n", produto.getEstoque());
+        System.out.print("Quantidade desejada: ");
+        int quantidade = scanner.nextInt();
+        
+        if (quantidade <= 0) {
+            System.out.println("Quantidade deve ser maior que zero!");
+            return;
+        }
+        
+        if (produtoRepository.atualizarEstoque(idProduto, quantidade)) {
+            double total = produto.getPreco() * quantidade;
+            System.out.println("\n=== VENDA REALIZADA COM SUCESSO ===");
+            System.out.printf("Produto: %s%n", produto.getNome());
+            System.out.printf("Quantidade: %d%n", quantidade);
+            System.out.printf("Valor unitário: R$ %.2f%n", produto.getPreco());
+            System.out.printf("TOTAL: R$ %.2f%n", total);
+            System.out.println("=====================================");
+        } else {
+            System.out.printf("Estoque insuficiente! Disponível: %d%n", produto.getEstoque());
+        }
+    }
+    
+    public void consultarProdutos() {
+        List<Produto> produtos = produtoRepository.listarProdutos();
+        
+        if (produtos.isEmpty()) {
+            System.out.println("Nenhum produto cadastrado!");
+            return;
+        }
+        
+        System.out.println("\n=== PRODUTOS DISPONÍVEIS ===");
+        for (Produto p : produtos) {
+            String status = p.getEstoque() > 0 ? "Disponível" : "Sem estoque";
+            System.out.printf("ID: %d | %s - R$ %.2f | Estoque: %d (%s)%n", 
+                p.getId(), p.getNome(), p.getPreco(), p.getEstoque(), status);
+        }
     }
 }
