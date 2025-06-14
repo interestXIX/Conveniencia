@@ -1,23 +1,22 @@
-package conveniencia;
-
+package conveniencia2;
 public abstract class Usuario {
-	private int id;
-	private String nome;
-	private String usuario;
-	private String senha;
-	
-	public Usuario(int id, String nome, String login, String senha) {
-		this.id = id;
-		this.nome = nome;
-		this.usuario = login;
-		this.senha = senha;
-	}
-	
-	public int getId() {return id;}
-	public String getNome() {return nome;}
-	public String getUsuario() {return usuario;}
-	public String getSenha() {return senha;}
-	
-	public abstract void mostrarMenu();
-	public abstract boolean temPermissaoAdmin();
+    private int id;
+    private String nome;
+    private String usuario;
+    private String senha;
+
+    public Usuario(int id, String nome, String login, String senha) {
+        this.id = id;
+        this.nome = nome;
+        this.usuario = login;
+        this.senha = senha;
+    }
+
+    public int getId() { return id; }
+    public String getNome() { return nome; }
+    public String getUsuario() { return usuario; }
+    public String getSenha() { return senha; }
+
+    public abstract void mostrarMenu();
+    public abstract boolean temPermissaoAdmin();
 }
