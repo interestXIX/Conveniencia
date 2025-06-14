@@ -1,0 +1,62 @@
+package conveniencia2;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ProdutoRepository {
+    private List<Produto> produtos = new ArrayList<>();
+    private int proximoId = 1;
+    
+    public ProdutoRepository() {
+        // Produtos iniciais
+        produtos.add(new Produto(proximoId++, "Coca-Cola 350ml", 5.50, 25));
+        produtos.add(new Produto(proximoId++, "Pão Frances (unid)", 0.50, 50));
+        produtos.add(new Produto(proximoId++, "Leite Integral 1L", 4.20, 15));
+        produtos.add(new Produto(proximoId++, "Água Mineral 500ml", 2.00, 30));
+        produtos.add(new Produto(proximoId++, "Biscoito Recheado", 3.75, 20));
+    }
+    
+    public void cadastrarProduto(Produto produto) {
+        Produto novoProduto = new Produto(proximoId++, produto.getNome(), 
+                                         produto.getPreco(), produto.getEstoque());
+        produtos.add(novoProduto);
+    }
+    
+    public List<Produto> listarProdutos() {
+        return new ArrayList<>(produtos); // Retorna cópia para evitar modificação externa
+    }
+    
+    public Produto buscarPorId(int id) {
+        for (Produto p : produtos) {
+            if (p.getId() == id) {
+                return p;
+            }
+        }
+        return null;
+    }
+    
+    public boolean atualizarEstoque(int idProduto, int quantidade) {
+        Produto produto = buscarPorId(idProduto);
+        if (produto != null && produto.getEstoque() >= quantidade) {
+            produto.setEstoque(produto.getEstoque() - quantidade);
+            return true;
+        }
+        return false;
+    }
+    
+    public void removerProduto(int id) {
+        produtos.removeIf(p -> p.getId() == id);
+    }
+    
+    public boolean editarProduto(int id, String nome, double preco, int estoque) {
+        Produto produto = buscarPorId(id);
+        if (produto != null) {
+            // Como os campos são privados, seria necessário ter setters na classe Produto
+            // Por enquanto, removemos o antigo e adicionamos um novo
+            removerProduto(id);
+            produtos.add(new Produto(id, nome, preco, estoque));
+            return true;
+        }
+        return false;
+    }
+}
