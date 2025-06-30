@@ -9,7 +9,7 @@ public class UsuarioRepository {
         // Usuários padrão do sistema (senhas em texto simples)
         usuarios.add(new Administrador(1, "Admin Gabriel", "gabriel admin", "naotemsenha"));
         usuarios.add(new Vendedor(2, "Gabriel Valério", "gabriel", "naoquero"));
-        usuarios.add(new Vendedor(3, "Giovana", "giovana", "casacmg"));
+        usuarios.add(new Vendedor(3, "Giovanna", "giovanna", "casacmg"));
     }
     
     public Usuario buscarPorCredenciais(String usuario, String senhaDigitada) {
