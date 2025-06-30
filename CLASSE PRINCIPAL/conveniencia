@@ -8,14 +8,7 @@ public class Conveniencia {
     public static void main(String[] args) {
         SistemaLogin sistema = new SistemaLogin();
         Scanner scanner = new Scanner(System.in);
-      /* 
-        System.out.println("=========================================");
-        System.out.println("===   SISTEMA DE CONVENIÊNCIA v2.0   ===");
-        System.out.println("===      (Versão Simplificada)       ===");
-        System.out.println("=========================================");
-        
-        mostrarCredenciaisDemo();
-        */
+     
         // Loop principal do sistema
         while (true) {
             System.out.println("\n=== LOGIN ===");
@@ -33,7 +26,7 @@ public class Conveniencia {
             Usuario usuarioLogado = sistema.fazerLogin(usuario, senha);
             
             if (usuarioLogado != null) {
-                System.out.printf("\n✓ Bem-vindo, %s!%n", usuarioLogado.getNome());
+                System.out.printf("\n Bem-vindo, %s!%n", usuarioLogado.getNome());
                 
                 if (usuarioLogado.temPermissaoAdmin()) {
                     Administrador admin = (Administrador) usuarioLogado;
@@ -45,7 +38,7 @@ public class Conveniencia {
                     executarMenuVendedor(vendedor, scanner);
                 }
             } else {
-                System.out.println("✗ Credenciais inválidas! Tente novamente.");
+                System.out.println(" Credenciais inválidas! Tente novamente.");
                 System.out.println("Digite 'sair' como usuário para encerrar o sistema.");
             }
         }
